@@ -62,7 +62,24 @@ map.on('load', function () {
 		maxZoom: 3
     });
 
+    console.log('layer',topojson.feature(overlaysGeo, overlaysGeo.objects.areas))
+
+
     let layer = topojson.merge(overlaysGeo, overlaysGeo.objects.areas.geometries.filter(f => f.properties.layer === 'overlay-2202'))
+
+    
+
+/*    Object { type: "MultiPolygon", coordinates: (2) […] }
+​
+coordinates: Array [ (1) […], (1) […] ]
+​​
+0: Array [ (150) […] ]
+​​​
+0: Array(150) [ (2) […], (2) […], (2) […], … ]
+​​​​
+[0…99]
+​​​​​
+0: Array [ 33.628588332116834, 46.124908110848814 ]*/
 
 	map.addSource('disputed', {
 		'type': 'geojson',
@@ -79,12 +96,35 @@ map.on('load', function () {
 			'fill-opacity': 0.3
 		}
 	});
+
+	map.addSource('choropleth',{
+		type:'geojson',
+		data:'<%= path %>/communesBZH.geojson'
+	})
+
+	map.addLayer({
+        'id': 'choropleth',
+        'type': 'fill',
+        'source': 'choropleth',
+        'layout': {'visibility': 'visible'},
+		'paint': {'fill-outline-color': '#000000',
+                  'fill-color': ['interpolate',['linear'],
+					   ['get', 'density'],
+                        30, '#4d9221',
+						50, '#a1d76a',
+						100, '#e6f5d0',
+						200, '#fde0ef',
+						400, '#e9a3c9',
+						800, '#c51b7d'],
+                  'fill-opacity': 0.75}
+}); 
+
 })
 
 map.on('zoom', () => {
-	console.log(map.getZoom())
+	/*console.log(map.getZoom())
 	console.log('------------------------------------')
-	console.log( map.getBounds())
+	console.log( map.getBounds())*/
 })
 
 const scrolly = new ScrollyTeller({
